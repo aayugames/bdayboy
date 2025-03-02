@@ -2,13 +2,10 @@ const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
-const leftBubble = document.querySelector('.left-bubble');
-const rightBubble = document.querySelector('.right-bubble');
 let playerPosition = 50;
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
-let opponentBoats = [];
 
 // Move player boat left and right
 document.addEventListener('keydown', (e) => {
@@ -31,62 +28,51 @@ function startGame() {
   } else {
     countdownElement.style.display = 'none';
     gameStarted = true;
+    finishLine.style.display = 'block';
     gameInterval = setInterval(updateGame, 20);
-    createOpponentBoats();
-    showTextBubbles();
+    createObstacles();
   }
 }
 
-// Create opponent boats
-function createOpponentBoats() {
-  for (let i = 0; i < 3; i++) {
-    const opponentBoat = document.createElement('div');
-    opponentBoat.className = 'boat opponent-boat';
-    opponentBoat.style.left = `${10 + i * 30}%`;
-    opponentBoat.style.bottom = '20px'; // Start at the bottom
-    document.querySelector('.game-container').appendChild(opponentBoat);
-    opponentBoats.push(opponentBoat);
-  }
-}
+// Create obstacles (boats coming the opposite way)
+function createObstacles() {
+  const obstacle = document.createElement('div');
+  obstacle.className = 'obstacle';
+  obstacle.style.left = `${Math.random() * 90}%`;
+  obstacle.style.top = '-60px'; // Start above the screen
+  document.querySelector('.game-container').appendChild(obstacle);
 
-// Move opponent boats
-function moveOpponentBoats() {
-  opponentBoats.forEach((boat) => {
-    const speed = Math.random() * 2 + 1; // Random speed for each boat
-    const currentBottom = parseFloat(boat.style.bottom) || 20;
-    boat.style.bottom = `${currentBottom + speed}%`;
+  let obstaclePosition = -60;
+  const obstacleInterval = setInterval(() => {
+    obstaclePosition += 2; // Speed of obstacles
+    obstacle.style.top = `${obstaclePosition}px`;
 
-    // Check if opponent boat reaches the finish line
-    if (currentBottom >= 80) {
+    // Check for collision
+    if (
+      obstaclePosition > 80 &&
+      playerPosition > parseFloat(obstacle.style.left) - 5 &&
+      playerPosition < parseFloat(obstacle.style.left) + 5
+    ) {
+      clearInterval(obstacleInterval);
       endGame(false);
     }
-  });
-}
 
-// Show text bubbles at random intervals
-function showTextBubbles() {
-  if (!gameStarted) return;
-
-  const bubble = Math.random() > 0.5 ? leftBubble : rightBubble;
-  bubble.style.display = 'block';
-  setTimeout(() => {
-    bubble.style.display = 'none';
-    if (gameStarted) {
-      showTextBubbles();
+    // Remove obstacle if it goes off screen
+    if (obstaclePosition > 100) {
+      obstacle.remove();
     }
-  }, 2000);
+  }, 20);
+
+  if (gameStarted) {
+    setTimeout(createObstacles, 2000); // Create new obstacles every 2 seconds
+  }
 }
 
 // Update game state
 function updateGame() {
-  moveOpponentBoats();
-
   const playerBottom = parseFloat(playerBoat.style.bottom) || 20;
   if (playerBottom >= 80) {
-    finishLine.style.display = 'block';
-    if (playerBottom >= 95) {
-      endGame(true);
-    }
+    endGame(true);
   }
 }
 
@@ -95,9 +81,9 @@ function endGame(success) {
   clearInterval(gameInterval);
   gameStarted = false;
   if (success) {
-    messageElement.textContent = 'HAPPY BIRTHDAY CHAMP! I LOVE YOU.';
+    messageElement.textContent = 'HAPPY BIRTHDAY CHAMP! I LOVE YOU <3';
   } else {
-    messageElement.textContent = 'Try again!';
+    messageElement.textContent = 'You crashed! Try again!';
   }
   messageElement.style.display = 'block';
   setTimeout(() => {
@@ -110,12 +96,10 @@ function endGame(success) {
 function resetGame() {
   playerPosition = 50;
   playerBoat.style.left = '50%';
-  playerBoat.style.bottom = '20px';
   countdown = 3;
   countdownElement.style.display = 'block';
   finishLine.style.display = 'none';
-  opponentBoats.forEach((boat) => boat.remove());
-  opponentBoats = [];
+  document.querySelectorAll('.obstacle').forEach(obstacle => obstacle.remove());
   startGame();
 }
 
