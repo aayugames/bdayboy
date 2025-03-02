@@ -1,22 +1,25 @@
-const boat = document.getElementById('boat');
+const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
-let boatPosition = 50;
+const leftBubble = document.querySelector('.left-bubble');
+const rightBubble = document.querySelector('.right-bubble');
+let playerPosition = 50;
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
+let opponentBoats = [];
 
-// Move boat left and right
+// Move player boat left and right
 document.addEventListener('keydown', (e) => {
   if (!gameStarted) return;
 
-  if (e.key === 'ArrowLeft' && boatPosition > 0) {
-    boatPosition -= 5;
-  } else if (e.key === 'ArrowRight' && boatPosition < 95) {
-    boatPosition += 5;
+  if (e.key === 'ArrowLeft' && playerPosition > 0) {
+    playerPosition -= 5;
+  } else if (e.key === 'ArrowRight' && playerPosition < 95) {
+    playerPosition += 5;
   }
-  boat.style.left = `${boatPosition}%`;
+  playerBoat.style.left = `${playerPosition}%`;
 });
 
 // Countdown and start game
@@ -29,47 +32,61 @@ function startGame() {
     countdownElement.style.display = 'none';
     gameStarted = true;
     gameInterval = setInterval(updateGame, 20);
-    moveObstacles();
+    createOpponentBoats();
+    showTextBubbles();
   }
 }
 
-// Obstacle logic
-function moveObstacles() {
-  const obstacle = document.createElement('div');
-  obstacle.className = 'obstacle';
-  obstacle.style.left = `${Math.random() * 90}%`;
-  document.querySelector('.game-container').appendChild(obstacle);
+// Create opponent boats
+function createOpponentBoats() {
+  for (let i = 0; i < 3; i++) {
+    const opponentBoat = document.createElement('div');
+    opponentBoat.className = 'boat opponent-boat';
+    opponentBoat.style.left = `${10 + i * 30}%`;
+    opponentBoat.style.bottom = '20px'; // Start at the bottom
+    document.querySelector('.game-container').appendChild(opponentBoat);
+    opponentBoats.push(opponentBoat);
+  }
+}
 
-  let obstaclePosition = 0;
-  const obstacleInterval = setInterval(() => {
-    obstaclePosition += 1;
-    obstacle.style.top = `${obstaclePosition}%`;
+// Move opponent boats
+function moveOpponentBoats() {
+  opponentBoats.forEach((boat) => {
+    const speed = Math.random() * 2 + 1; // Random speed for each boat
+    const currentBottom = parseFloat(boat.style.bottom) || 20;
+    boat.style.bottom = `${currentBottom + speed}%`;
 
-    // Check for collision
-    if (
-      obstaclePosition > 80 &&
-      boatPosition > parseFloat(obstacle.style.left) - 5 &&
-      boatPosition < parseFloat(obstacle.style.left) + 5
-    ) {
-      clearInterval(obstacleInterval);
+    // Check if opponent boat reaches the finish line
+    if (currentBottom >= 80) {
       endGame(false);
     }
+  });
+}
 
-    // Remove obstacle if it goes off screen
-    if (obstaclePosition > 100) {
-      obstacle.remove();
+// Show text bubbles at random intervals
+function showTextBubbles() {
+  if (!gameStarted) return;
+
+  const bubble = Math.random() > 0.5 ? leftBubble : rightBubble;
+  bubble.style.display = 'block';
+  setTimeout(() => {
+    bubble.style.display = 'none';
+    if (gameStarted) {
+      showTextBubbles();
     }
-  }, 20);
-
-  if (gameStarted) {
-    setTimeout(moveObstacles, 2000);
-  }
+  }, 2000);
 }
 
 // Update game state
 function updateGame() {
-  if (boatPosition >= 75) {
-    endGame(true);
+  moveOpponentBoats();
+
+  const playerBottom = parseFloat(playerBoat.style.bottom) || 20;
+  if (playerBottom >= 80) {
+    finishLine.style.display = 'block';
+    if (playerBottom >= 95) {
+      endGame(true);
+    }
   }
 }
 
@@ -91,11 +108,14 @@ function endGame(success) {
 
 // Reset game
 function resetGame() {
-  boatPosition = 50;
-  boat.style.left = '50%';
+  playerPosition = 50;
+  playerBoat.style.left = '50%';
+  playerBoat.style.bottom = '20px';
   countdown = 3;
   countdownElement.style.display = 'block';
-  document.querySelectorAll('.obstacle').forEach(obstacle => obstacle.remove());
+  finishLine.style.display = 'none';
+  opponentBoats.forEach((boat) => boat.remove());
+  opponentBoats = [];
   startGame();
 }
 
