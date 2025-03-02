@@ -55,38 +55,10 @@ body {
   display: none;
 }
 
-.audience {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 20px;
-  color: white;
-}
-
-.bubble {
-  display: none;
-  position: absolute;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
-  margin: 10px;
-}
-
-.left-bubble {
-  left: 10%;
-  bottom: 20%;
-}
-
-.right-bubble {
-  right: 10%;
-  bottom: 20%;
-}
-
 .obstacle {
   position: absolute;
-  width: 50px;
-  height: 50px;
-  background-color: black;
-  border-radius: 50%;
+  width: 80px;
+  height: 60px;
+  background-image: url('boat.png.png'); /* Use the same boat image for obstacles */
+  background-size: cover;
 }
