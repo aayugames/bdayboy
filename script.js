@@ -2,6 +2,8 @@ const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
+const leftBubble = document.querySelector('.left-bubble');
+const rightBubble = document.querySelector('.right-bubble');
 let playerPosition = 50;
 let gameStarted = false;
 let countdown = 3;
@@ -31,6 +33,7 @@ function startGame() {
     finishLine.style.display = 'block';
     gameInterval = setInterval(updateGame, 20);
     createObstacles();
+    showTextBubbles();
   }
 }
 
@@ -39,10 +42,10 @@ function createObstacles() {
   const obstacle = document.createElement('div');
   obstacle.className = 'obstacle';
   obstacle.style.left = `${Math.random() * 90}%`;
-  obstacle.style.top = '-60px'; // Start above the screen
+  obstacle.style.top = '-80px'; // Start above the screen
   document.querySelector('.game-container').appendChild(obstacle);
 
-  let obstaclePosition = -60;
+  let obstaclePosition = -80;
   const obstacleInterval = setInterval(() => {
     obstaclePosition += 2; // Speed of obstacles
     obstacle.style.top = `${obstaclePosition}px`;
@@ -66,6 +69,20 @@ function createObstacles() {
   if (gameStarted) {
     setTimeout(createObstacles, 2000); // Create new obstacles every 2 seconds
   }
+}
+
+// Show text bubbles at random intervals
+function showTextBubbles() {
+  if (!gameStarted) return;
+
+  const bubble = Math.random() > 0.5 ? leftBubble : rightBubble;
+  bubble.style.display = 'block';
+  setTimeout(() => {
+    bubble.style.display = 'none';
+    if (gameStarted) {
+      showTextBubbles();
+    }
+  }, 2000);
 }
 
 // Update game state
