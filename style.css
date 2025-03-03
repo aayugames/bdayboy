@@ -23,8 +23,8 @@ body {
 .boat {
   position: absolute;
   bottom: 20px;
-  width: 80px;
-  height: 60px;
+  width: 100px; /* Increased boat size */
+  height: 80px; /* Increased boat size */
   background-image: url('boat.png.png'); /* Ensure this matches your image file name */
   background-size: cover;
   transition: left 0.2s;
@@ -55,10 +55,30 @@ body {
   display: none;
 }
 
+.bubble {
+  display: none;
+  position: absolute;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  font-size: 20px;
+  color: black;
+}
+
+.left-bubble {
+  left: 10%;
+  top: 10%;
+}
+
+.right-bubble {
+  right: 10%;
+  top: 10%;
+}
+
 .obstacle {
   position: absolute;
-  width: 80px;
-  height: 60px;
+  width: 100px; /* Increased obstacle size */
+  height: 80px; /* Increased obstacle size */
   background-image: url('boat.png.png'); /* Use the same boat image for obstacles */
   background-size: cover;
 }
