@@ -39,46 +39,46 @@ function startGame() {
 function createObstacles() {
   if (!gameStarted) return;
 
-  const obstacle = document.createElement('div');
-  obstacle.className = 'obstacle';
-  obstacle.style.left = `${Math.random() * 90}%`;
-  obstacle.style.top = '-100px'; // Start above the screen
-  document.querySelector('.game-container').appendChild(obstacle);
+  setInterval(() => {
+    const obstacle = document.createElement('div');
+    obstacle.className = 'obstacle';
+    obstacle.style.left = `${Math.random() * 90}%`;
+    obstacle.style.top = '-100px'; // Start above the screen
+    document.querySelector('.game-container').appendChild(obstacle);
 
-  let obstaclePositionY = -100;
-  const obstacleInterval = setInterval(() => {
-    if (!gameStarted) {
-      clearInterval(obstacleInterval);
-      return;
-    }
+    let obstaclePositionY = -100;
+    const obstacleInterval = setInterval(() => {
+      if (!gameStarted) {
+        clearInterval(obstacleInterval);
+        return;
+      }
 
-    obstaclePositionY += 3; // Speed of obstacles
-    obstacle.style.top = `${obstaclePositionY}px`;
+      obstaclePositionY += 2.5; // Adjust speed
+      obstacle.style.top = `${obstaclePositionY}px`;
 
-    // Check collision
-    if (
-      obstaclePositionY > playerPositionY - 10 && // Close enough vertically
-      playerPositionX > parseFloat(obstacle.style.left) - 5 &&
-      playerPositionX < parseFloat(obstacle.style.left) + 5
-    ) {
-      clearInterval(obstacleInterval);
-      endGame(false);
-    }
+      // Check collision
+      if (
+        obstaclePositionY > playerPositionY - 10 && // Close enough vertically
+        playerPositionX > parseFloat(obstacle.style.left) - 5 &&
+        playerPositionX < parseFloat(obstacle.style.left) + 5
+      ) {
+        clearInterval(obstacleInterval);
+        endGame(false);
+      }
 
-    // Remove obstacle if off-screen
-    if (obstaclePositionY > 100) {
-      obstacle.remove();
-    }
-  }, 30);
-
-  setTimeout(createObstacles, 2000); // Spawn new obstacles every 2s
+      // Remove obstacle if off-screen
+      if (obstaclePositionY > window.innerHeight) {
+        obstacle.remove();
+      }
+    }, 30);
+  }, 2000); // Spawns obstacles every 2 seconds
 }
 
 // Update game mechanics
 function updateGame() {
   if (!gameStarted) return;
 
-  playerPositionY -= 0.5; // Move player upwards
+  playerPositionY -= 0.3; // Move player upwards
   playerBoat.style.top = `${playerPositionY}%`;
 
   if (playerPositionY <= 5) {
