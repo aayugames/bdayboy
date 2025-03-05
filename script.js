@@ -2,8 +2,8 @@ const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
-let playerPositionX = 50; // Horizontal (left-right)
-let playerPositionY = 80; // Vertical (moves up)
+let playerPositionX = 50; 
+let playerPositionY = 80; 
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
@@ -53,12 +53,11 @@ function createObstacles() {
         return;
       }
 
-      obstaclePositionY += 2.5; // Adjust speed
+      obstaclePositionY += 2.5;
       obstacle.style.top = `${obstaclePositionY}px`;
 
-      // Check collision
       if (
-        obstaclePositionY > playerPositionY - 10 && // Close enough vertically
+        obstaclePositionY > playerPositionY - 10 &&
         playerPositionX > parseFloat(obstacle.style.left) - 5 &&
         playerPositionX < parseFloat(obstacle.style.left) + 5
       ) {
@@ -66,19 +65,18 @@ function createObstacles() {
         endGame(false);
       }
 
-      // Remove obstacle if off-screen
       if (obstaclePositionY > window.innerHeight) {
         obstacle.remove();
       }
     }, 30);
-  }, 2000); // Spawns obstacles every 2 seconds
+  }, 2000);
 }
 
 // Update game mechanics
 function updateGame() {
   if (!gameStarted) return;
 
-  playerPositionY -= 0.3; // Move player upwards
+  playerPositionY -= 0.3;
   playerBoat.style.top = `${playerPositionY}%`;
 
   if (playerPositionY <= 5) {
