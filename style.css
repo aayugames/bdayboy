@@ -22,7 +22,6 @@ body {
 
 .boat {
   position: absolute;
-  bottom: 20px;
   width: 100px; /* Increased boat size */
   height: 80px; /* Increased boat size */
   background-image: url('boat.png.png'); /* Ensure this matches your image file name */
@@ -31,6 +30,7 @@ body {
 }
 
 #player-boat {
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
 }
