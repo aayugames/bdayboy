@@ -2,13 +2,14 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: Arial, sans-serif;
+  background-color: lightblue;
 }
 
 .game-container {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: lightblue;
+  overflow: hidden;
 }
 
 #countdown {
@@ -22,11 +23,10 @@ body {
 
 .boat {
   position: absolute;
-  width: 100px; /* Increased boat size */
-  height: 80px; /* Increased boat size */
-  background-image: url('boat.png.png'); /* Ensure this matches your image file name */
+  width: 80px; /* Boat size */
+  height: 100px;
+  background-image: url('boat.png'); /* Ensure correct image filename */
   background-size: cover;
-  transition: left 0.2s;
 }
 
 #player-boat {
@@ -55,30 +55,10 @@ body {
   display: none;
 }
 
-.bubble {
-  display: none;
-  position: absolute;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
-  font-size: 20px;
-  color: black;
-}
-
-.left-bubble {
-  left: 10%;
-  top: 10%;
-}
-
-.right-bubble {
-  right: 10%;
-  top: 10%;
-}
-
 .obstacle {
   position: absolute;
-  width: 100px; /* Increased obstacle size */
-  height: 80px; /* Increased obstacle size */
-  background-image: url('boat.png.png'); /* Use the same boat image for obstacles */
+  width: 80px;
+  height: 100px;
+  background-image: url('obstacle.png'); /* Ensure this file exists */
   background-size: cover;
 }
