@@ -5,6 +5,7 @@ const finishLine = document.getElementById('finish-line');
 const leftBubble = document.querySelector('.left-bubble');
 const rightBubble = document.querySelector('.right-bubble');
 let playerPosition = 50;
+let playerTop = 80; // Player starts near the bottom
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
@@ -52,9 +53,9 @@ function createObstacles() {
 
     // Check for collision
     if (
-      obstaclePosition > 80 &&
-      playerPosition > parseFloat(obstacle.style.left) - 5 &&
-      playerPosition < parseFloat(obstacle.style.left) + 5
+      obstaclePosition > playerTop - 40 && // Check vertical overlap
+      playerPosition > parseFloat(obstacle.style.left) - 10 &&
+      playerPosition < parseFloat(obstacle.style.left) + 10
     ) {
       clearInterval(obstacleInterval);
       endGame(false);
@@ -87,8 +88,11 @@ function showTextBubbles() {
 
 // Update game state
 function updateGame() {
-  const playerBottom = parseFloat(playerBoat.style.bottom) || 20;
-  if (playerBottom >= 80) {
+  playerTop -= 1; // Player moves upward
+  playerBoat.style.top = `${playerTop}%`;
+
+  // Check if player reaches the finish line
+  if (playerTop <= 10) {
     endGame(true);
   }
 }
@@ -112,7 +116,9 @@ function endGame(success) {
 // Reset game
 function resetGame() {
   playerPosition = 50;
+  playerTop = 80;
   playerBoat.style.left = '50%';
+  playerBoat.style.top = '80%';
   countdown = 3;
   countdownElement.style.display = 'block';
   finishLine.style.display = 'none';
