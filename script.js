@@ -58,7 +58,7 @@ function createObstacles() {
       obstacleY += 3.5;
       obstacle.style.top = `${obstacleY}px`;
 
-      // Check collision
+      // Check collision (new improved method)
       if (checkCollision(playerBoat, obstacle)) {
         clearInterval(obstacleInterval);
         endGame(false);
@@ -72,16 +72,16 @@ function createObstacles() {
   }, 1500);
 }
 
-// Check if player collides with an obstacle
+// NEW FIXED COLLISION CHECK
 function checkCollision(player, obstacle) {
   const playerRect = player.getBoundingClientRect();
   const obstacleRect = obstacle.getBoundingClientRect();
 
-  return !(
-    playerRect.bottom < obstacleRect.top ||
-    playerRect.top > obstacleRect.bottom ||
-    playerRect.right < obstacleRect.left ||
-    playerRect.left > obstacleRect.right
+  return (
+    playerRect.top < obstacleRect.bottom &&
+    playerRect.bottom > obstacleRect.top &&
+    playerRect.left < obstacleRect.right &&
+    playerRect.right > obstacleRect.left
   );
 }
 
