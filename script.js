@@ -35,31 +35,32 @@ function startGame() {
   }
 }
 
-// Generate obstacles (opposing boats)
+// Generate obstacles (enemy boats)
 function createObstacles() {
   if (!gameStarted) return;
 
   setInterval(() => {
     const obstacle = document.createElement('div');
     obstacle.className = 'obstacle';
-    obstacle.style.left = `${Math.random() * 90}%`;
-    obstacle.style.top = '-100px'; // Start above the screen
+    obstacle.style.left = `${Math.random() * 80}%`;
+    obstacle.style.top = '-120px'; 
     document.querySelector('.game-container').appendChild(obstacle);
 
-    let obstaclePositionY = -100;
+    let obstaclePositionY = -120;
     const obstacleInterval = setInterval(() => {
       if (!gameStarted) {
         clearInterval(obstacleInterval);
         return;
       }
 
-      obstaclePositionY += 2.5;
+      obstaclePositionY += 3.5;
       obstacle.style.top = `${obstaclePositionY}px`;
 
+      // Check collision
       if (
-        obstaclePositionY > playerPositionY - 10 &&
-        playerPositionX > parseFloat(obstacle.style.left) - 5 &&
-        playerPositionX < parseFloat(obstacle.style.left) + 5
+        obstaclePositionY > playerPositionY - 15 &&
+        playerPositionX > parseFloat(obstacle.style.left) - 10 &&
+        playerPositionX < parseFloat(obstacle.style.left) + 10
       ) {
         clearInterval(obstacleInterval);
         endGame(false);
@@ -69,14 +70,14 @@ function createObstacles() {
         obstacle.remove();
       }
     }, 30);
-  }, 2000);
+  }, 1500);
 }
 
 // Update game mechanics
 function updateGame() {
   if (!gameStarted) return;
 
-  playerPositionY -= 0.3;
+  playerPositionY -= 0.5;
   playerBoat.style.top = `${playerPositionY}%`;
 
   if (playerPositionY <= 5) {
