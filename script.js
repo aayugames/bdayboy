@@ -2,10 +2,8 @@ const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
-const leftBubble = document.querySelector('.left-bubble');
-const rightBubble = document.querySelector('.right-bubble');
-let playerPosition = 50;
-let playerTop = 80; // Player starts near the bottom
+let playerPositionX = 50; // Horizontal (left-right)
+let playerPositionY = 80; // Vertical (moves up)
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
@@ -14,15 +12,15 @@ let gameInterval;
 document.addEventListener('keydown', (e) => {
   if (!gameStarted) return;
 
-  if (e.key === 'ArrowLeft' && playerPosition > 0) {
-    playerPosition -= 5;
-  } else if (e.key === 'ArrowRight' && playerPosition < 95) {
-    playerPosition += 5;
+  if (e.key === 'ArrowLeft' && playerPositionX > 5) {
+    playerPositionX -= 5;
+  } else if (e.key === 'ArrowRight' && playerPositionX < 95) {
+    playerPositionX += 5;
   }
-  playerBoat.style.left = `${playerPosition}%`;
+  playerBoat.style.left = `${playerPositionX}%`;
 });
 
-// Countdown and start game
+// Countdown before starting the game
 function startGame() {
   countdownElement.textContent = countdown;
   if (countdown > 0) {
@@ -32,91 +30,85 @@ function startGame() {
     countdownElement.style.display = 'none';
     gameStarted = true;
     finishLine.style.display = 'block';
-    gameInterval = setInterval(updateGame, 20);
+    gameInterval = setInterval(updateGame, 30);
     createObstacles();
-    showTextBubbles();
   }
 }
 
-// Create obstacles (boats coming the opposite way)
+// Generate obstacles (opposing boats)
 function createObstacles() {
+  if (!gameStarted) return;
+
   const obstacle = document.createElement('div');
   obstacle.className = 'obstacle';
   obstacle.style.left = `${Math.random() * 90}%`;
-  obstacle.style.top = '-80px'; // Start above the screen
+  obstacle.style.top = '-100px'; // Start above the screen
   document.querySelector('.game-container').appendChild(obstacle);
 
-  let obstaclePosition = -80;
+  let obstaclePositionY = -100;
   const obstacleInterval = setInterval(() => {
-    obstaclePosition += 2; // Speed of obstacles
-    obstacle.style.top = `${obstaclePosition}px`;
+    if (!gameStarted) {
+      clearInterval(obstacleInterval);
+      return;
+    }
 
-    // Check for collision
+    obstaclePositionY += 3; // Speed of obstacles
+    obstacle.style.top = `${obstaclePositionY}px`;
+
+    // Check collision
     if (
-      obstaclePosition > playerTop - 40 && // Check vertical overlap
-      playerPosition > parseFloat(obstacle.style.left) - 10 &&
-      playerPosition < parseFloat(obstacle.style.left) + 10
+      obstaclePositionY > playerPositionY - 10 && // Close enough vertically
+      playerPositionX > parseFloat(obstacle.style.left) - 5 &&
+      playerPositionX < parseFloat(obstacle.style.left) + 5
     ) {
       clearInterval(obstacleInterval);
       endGame(false);
     }
 
-    // Remove obstacle if it goes off screen
-    if (obstaclePosition > 100) {
+    // Remove obstacle if off-screen
+    if (obstaclePositionY > 100) {
       obstacle.remove();
     }
-  }, 20);
+  }, 30);
 
-  if (gameStarted) {
-    setTimeout(createObstacles, 2000); // Create new obstacles every 2 seconds
-  }
+  setTimeout(createObstacles, 2000); // Spawn new obstacles every 2s
 }
 
-// Show text bubbles at random intervals
-function showTextBubbles() {
+// Update game mechanics
+function updateGame() {
   if (!gameStarted) return;
 
-  const bubble = Math.random() > 0.5 ? leftBubble : rightBubble;
-  bubble.style.display = 'block';
-  setTimeout(() => {
-    bubble.style.display = 'none';
-    if (gameStarted) {
-      showTextBubbles();
-    }
-  }, 2000);
-}
+  playerPositionY -= 0.5; // Move player upwards
+  playerBoat.style.top = `${playerPositionY}%`;
 
-// Update game state
-function updateGame() {
-  playerTop -= 1; // Player moves upward
-  playerBoat.style.top = `${playerTop}%`;
-
-  // Check if player reaches the finish line
-  if (playerTop <= 10) {
+  if (playerPositionY <= 5) {
     endGame(true);
   }
 }
 
-// End game logic
+// End game (win or lose)
 function endGame(success) {
   clearInterval(gameInterval);
   gameStarted = false;
+
   if (success) {
     messageElement.textContent = 'HAPPY BIRTHDAY CHAMP! I LOVE YOU <3';
   } else {
     messageElement.textContent = 'You crashed! Try again!';
   }
+
   messageElement.style.display = 'block';
+
   setTimeout(() => {
     messageElement.style.display = 'none';
     resetGame();
   }, 3000);
 }
 
-// Reset game
+// Reset game state
 function resetGame() {
-  playerPosition = 50;
-  playerTop = 80;
+  playerPositionX = 50;
+  playerPositionY = 80;
   playerBoat.style.left = '50%';
   playerBoat.style.top = '80%';
   countdown = 3;
@@ -126,5 +118,5 @@ function resetGame() {
   startGame();
 }
 
-// Start the game initially
+// Start the game
 startGame();
