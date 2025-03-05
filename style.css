@@ -26,8 +26,8 @@ body {
   width: 80px; 
   height: 100px;
   background-image: url('boat.png.png'); /* KEEPING YOUR FILE NAME */
-  background-size: cover;
-  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
   display: block;
 }
 
@@ -62,7 +62,7 @@ body {
   width: 80px;
   height: 100px;
   background-image: url('boat.png.png'); /* KEEPING YOUR FILE NAME */
-  background-size: cover;
-  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
   display: block;
 }
