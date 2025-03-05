@@ -2,12 +2,14 @@ const playerBoat = document.getElementById('player-boat');
 const countdownElement = document.getElementById('countdown');
 const messageElement = document.getElementById('message');
 const finishLine = document.getElementById('finish-line');
+
 let playerX = 50;
 let playerY = 80;
 let gameStarted = false;
 let countdown = 3;
 let gameInterval;
 let obstacles = [];
+let obstacleSpawner;
 
 // Move player boat left and right
 document.addEventListener('keydown', (e) => {
@@ -32,7 +34,7 @@ function startGame() {
     gameStarted = true;
     finishLine.style.display = 'block';
     gameInterval = setInterval(updateGame, 30);
-    createObstacles();
+    obstacleSpawner = setInterval(createObstacles, 2000);
   }
 }
 
@@ -40,48 +42,49 @@ function startGame() {
 function createObstacles() {
   if (!gameStarted) return;
 
-  setInterval(() => {
-    const obstacle = document.createElement('div');
-    obstacle.className = 'obstacle';
-    obstacle.style.left = `${Math.random() * 80}%`;
-    obstacle.style.top = '-120px';
-    document.querySelector('.game-container').appendChild(obstacle);
-    obstacles.push(obstacle);
+  // Limit the number of active obstacles to avoid cluttering the screen
+  if (obstacles.length >= 5) return;
 
-    let obstacleY = -120;
-    const obstacleInterval = setInterval(() => {
-      if (!gameStarted) {
-        clearInterval(obstacleInterval);
-        return;
-      }
+  const obstacle = document.createElement('div');
+  obstacle.className = 'obstacle';
+  obstacle.style.left = `${Math.random() * 80}%`;
+  obstacle.style.top = '-120px';
+  document.querySelector('.game-container').appendChild(obstacle);
+  obstacles.push(obstacle);
 
-      obstacleY += 3.5;
-      obstacle.style.top = `${obstacleY}px`;
+  let obstacleY = -120;
+  const obstacleInterval = setInterval(() => {
+    if (!gameStarted) {
+      clearInterval(obstacleInterval);
+      return;
+    }
 
-      // Check collision (new improved method)
-      if (checkCollision(playerBoat, obstacle)) {
-        clearInterval(obstacleInterval);
-        endGame(false);
-      }
+    obstacleY += 3.5;
+    obstacle.style.top = `${obstacleY}px`;
 
-      if (obstacleY > window.innerHeight) {
-        obstacle.remove();
-        obstacles = obstacles.filter(o => o !== obstacle);
-      }
-    }, 30);
-  }, 1500);
+    // Check collision
+    if (checkCollision(playerBoat, obstacle)) {
+      clearInterval(obstacleInterval);
+      endGame(false);
+    }
+
+    if (obstacleY > window.innerHeight) {
+      obstacle.remove();
+      obstacles = obstacles.filter(o => o !== obstacle);
+    }
+  }, 30);
 }
 
-// NEW FIXED COLLISION CHECK
+// Accurate collision detection
 function checkCollision(player, obstacle) {
   const playerRect = player.getBoundingClientRect();
   const obstacleRect = obstacle.getBoundingClientRect();
 
   return (
-    playerRect.top < obstacleRect.bottom &&
     playerRect.bottom > obstacleRect.top &&
-    playerRect.left < obstacleRect.right &&
-    playerRect.right > obstacleRect.left
+    playerRect.top < obstacleRect.bottom &&
+    playerRect.right > obstacleRect.left &&
+    playerRect.left < obstacleRect.right
   );
 }
 
@@ -100,6 +103,7 @@ function updateGame() {
 // End game (win or lose)
 function endGame(success) {
   clearInterval(gameInterval);
+  clearInterval(obstacleSpawner);
   gameStarted = false;
 
   if (success) {
@@ -125,8 +129,11 @@ function resetGame() {
   countdown = 3;
   countdownElement.style.display = 'block';
   finishLine.style.display = 'none';
+
+  // Remove all existing obstacles to avoid screen clutter
   document.querySelectorAll('.obstacle').forEach(obstacle => obstacle.remove());
   obstacles = [];
+
   startGame();
 }
 
